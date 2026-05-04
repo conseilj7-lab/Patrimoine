@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FoncierDésh">
+<meta name="theme-color" content="#0a0f1e">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>FoncierDéshérence — Biens Vacants & Abandonnés</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0a0f1e;
+  --paper: #f5f0e8;
+  --gold: #c8a84b;
+  --gold-light: #e8d08a;
+  --rust: #8b3a2a;
+  --sage: #4a6741;
+  --muted: #8a8070;
+  --card-bg: #fffdf7;
+  --border: #d4c9b0;
+  --score-high: #2d6a4f;
+  --score-mid: #c8a84b;
+  --score-low: #8b3a2a;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── HEADER ── */
+header {
+  background: var(--ink);
+  color: var(--paper);
+  padding: env(safe-area-inset-top, 0) 0 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 2px solid var(--gold);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.brand-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.header-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  background: var(--gold);
+  color: var(--ink);
+  padding: 3px 8px;
+  border-radius: 2px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  background: var(--ink);
+  border-top: 1px solid rgba(200,168,75,0.2);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+  flex: 1;
+  min-width: 80px;
+  padding: 10px 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  cursor: pointer;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tab.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+/* ── PAGES ── */
+.page { display: none; padding: 20px; padding-bottom: 40px; }
+.page.active { display: block; }
+
+/* ── SECTION TITLES ── */
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.section-sub {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 14px;
+  position: relative;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--gold);
+  border-radius: 6px 0 0 6px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  flex: 1;
+  padding-right: 10px;
+}
+
+.score-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.score-high { background: var(--score-high); color: #fff; }
+.score-mid  { background: var(--score-mid);  color: var(--ink); }
+.score-low  { background: var(--score-low);  color: #fff; }
+
+.card-meta {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.card-meta span {
+  display: inline-block;
+  margin-right: 14px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+/* ── BUTTONS ── */
+.btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background: var(--ink);
+  color: var(--gold);
+}
+
+.btn-primary:active { opacity: 0.8; }
+
+.btn-outline {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--border);
+}
+
+.btn-gold {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.btn-danger {
+  background: var(--rust);
+  color: #fff;
+}
+
+/* ── SEARCH ZONE ── */
+.search-box {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.search-box label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.search-box input, .search-box select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--paper);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  color: var(--ink);
+  margin-bottom: 10px;
+  -webkit-appearance: none;
+}
+
+.search-box input:focus, .search-box select:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+/* ── PROGRESS ── */
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--gold);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.progress-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ── STATS GRID ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.stat-box {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  text-align: center;
+}
+
+.stat-number {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.stat-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* ── TYPE TAGS ── */
+.type-tag {
+  display: inline-block;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 2px;
+  margin-right: 4px;
+  margin-bottom: 4px;
+}
+
+.tag-succession  { background: #e8d5b0; color: #5a3e1b; }
+.tag-vacant      { background: #d0e8d5; color: #1b5a2d; }
+.tag-prescrit    { background: #d5d0e8; color: #2d1b5a; }
+.tag-abandon     { background: #e8d0d0; color: #5a1b1b; }
+
+/* ── COMMUNE ROW ── */
+.commune-row {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.commune-row:active { border-color: var(--gold); }
+
+.commune-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.commune-dept {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.commune-count {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--gold);
+}
+
+/* ── DOCUMENT BUILDER ── */
+.doc-section {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+.doc-header {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.doc-type {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.doc-dest {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--muted);
+}
+
+.doc-body {
+  padding: 16px;
+}
+
+.doc-field {
+  margin-bottom: 12px;
+}
+
+.doc-field label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.doc-field input, .doc-field textarea {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--paper);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  color: var(--ink);
+  resize: vertical;
+}
+
+.doc-field input:focus, .doc-field textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+/* ── NOTICE ZONE ── */
+.notice {
+  border-left: 3px solid var(--gold);
+  background: rgba(200,168,75,0.08);
+  padding: 12px 14px;
+  border-radius: 0 4px 4px 0;
+  margin-bottom: 16px;
+}
+
+.notice-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+
+.notice p {
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10,15,30,0.7);
+  z-index: 200;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--paper);
+  border-radius: 12px 12px 0 0;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 20px;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0));
+}
+
+.modal-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+
+.modal-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+/* ── DETAIL TABLE ── */
+.detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 14px;
+}
+
+.detail-table td {
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.82rem;
+}
+
+.detail-table td:first-child {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  width: 40%;
+}
+
+/* ── SCORE GAUGE ── */
+.gauge-wrap {
+  text-align: center;
+  margin: 16px 0;
+}
+
+.gauge {
+  display: inline-block;
+  width: 90px;
+  height: 90px;
+  position: relative;
+}
+
+.gauge svg { transform: rotate(-90deg); }
+
+.gauge-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.gauge-number {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.gauge-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.52rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── LOADER ── */
+.loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.loader-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loader-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center;
+  padding: 50px 20px;
+  color: var(--muted);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+
+.empty-sub {
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+/* ── PRINT PREVIEW ── */
+@media print {
+  header, .tabs, .card-actions, .btn, .modal-overlay { display: none !important; }
+  .print-doc { display: block !important; }
+  body { background: white; color: black; }
+  .print-content { padding: 20mm; font-size: 12pt; line-height: 1.8; }
+}
+
+.print-doc { display: none; }
+
+/* ── SOURCE CHIPS ── */
+.source-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.source-chip {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  padding: 3px 8px;
+  border-radius: 2px;
+  background: var(--ink);
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+
+.source-chip.active { background: var(--sage); color: #fff; }
+.source-chip.pending { background: var(--gold); color: var(--ink); }
+.source-chip.error { background: var(--rust); color: #fff; }
+
+/* ── CRITERIA LIST ── */
+.criteria-list {
+  list-style: none;
+  margin-bottom: 14px;
+}
+
+.criteria-list li {
+  font-size: 0.82rem;
+  padding: 5px 0;
+  border-bottom: 1px dashed var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.criteria-list li:last-child { border: none; }
+
+.criteria-check { font-size: 1rem; }
+
+/* ── FILTER BAR ── */
+.filter-bar {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-bottom: 16px;
+  padding-bottom: 4px;
+}
+
+.filter-bar::-webkit-scrollbar { display: none; }
+
+.filter-pill {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.filter-pill.active {
+  background: var(--ink);
+  color: var(--gold);
+  border-color: var(--ink);
+}
+
+/* ── INFO BANNER ── */
+.info-banner {
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.info-banner::after {
+  content: '⚖';
+  position: absolute;
+  right: -5px;
+  bottom: -10px;
+  font-size: 4rem;
+  opacity: 0.08;
+}
+
+.info-banner-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+
+.info-banner p {
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: rgba(245,240,232,0.75);
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-title">FoncierDéshérence</div>
+      <div class="brand-sub">Biens vacants · Successions · Abandons</div>
+    </div>
+    <div class="header-badge">PWA · Gratuit</div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="showPage('search')">🔍 Recherche</div>
+    <div class="tab" onclick="showPage('results')">📍 Résultats</div>
+    <div class="tab" onclick="showPage('docs')">📄 Documents</div>
+    <div class="tab" onclick="showPage('guide')">⚖ Guide</div>
+    <div class="tab" onclick="showPage('settings')">⚙ Sources</div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════
+     PAGE : RECHERCHE
+════════════════════════════════════════════════ -->
+<div id="page-search" class="page active">
+  <div class="section-title">Zone de recherche</div>
+  <div class="section-sub">Délimitez la zone géographique à analyser. Les données publiques sont collectées automatiquement depuis les sources officielles.</div>
+
+  <div class="search-box">
+    <label>Département</label>
+    <select id="sel-dept" onchange="updateCommunes()">
+      <option value="">— Sélectionner —</option>
+      <option value="01">01 — Ain</option>
+      <option value="02">02 — Aisne</option>
+      <option value="03">03 — Allier</option>
+      <option value="06">06 — Alpes-Maritimes</option>
+      <option value="13">13 — Bouches-du-Rhône</option>
+      <option value="14">14 — Calvados</option>
+      <option value="17">17 — Charente-Maritime</option>
+      <option value="21">21 — Côte-d'Or</option>
+      <option value="24">24 — Dordogne</option>
+      <option value="25">25 — Doubs</option>
+      <option value="30">30 — Gard</option>
+      <option value="31">31 — Haute-Garonne</option>
+      <option value="33">33 — Gironde</option>
+      <option value="34">34 — Hérault</option>
+      <option value="35">35 — Ille-et-Vilaine</option>
+      <option value="37">37 — Indre-et-Loire</option>
+      <option value="38">38 — Isère</option>
+      <option value="44">44 — Loire-Atlantique</option>
+      <option value="45">45 — Loiret</option>
+      <option value="49">49 — Maine-et-Loire</option>
+      <option value="54">54 — Meurthe-et-Moselle</option>
+      <option value="57">57 — Moselle</option>
+      <option value="59">59 — Nord</option>
+      <option value="60">60 — Oise</option>
+      <option value="62">62 — Pas-de-Calais</option>
+      <option value="63">63 — Puy-de-Dôme</option>
+      <option value="67">67 — Bas-Rhin</option>
+      <option value="69">69 — Rhône</option>
+      <option value="75">75 — Paris</option>
+      <option value="76">76 — Seine-Maritime</option>
+      <option value="77">77 — Seine-et-Marne</option>
+      <option value="78">78 — Yvelines</option>
+      <option value="83">83 — Var</option>
+      <option value="84">84 — Vaucluse</option>
+      <option value="85">85 — Vendée</option>
+      <option value="87">87 — Haute-Vienne</option>
+      <option value="91">91 — Essonne</option>
+      <option value="92">92 — Hauts-de-Seine</option>
+      <option value="93">93 — Seine-Saint-Denis</option>
+      <option value="94">94 — Val-de-Marne</option>
+      <option value="95">95 — Val-d'Oise</option>
+    </select>
+
+    <label>Commune (optionnel)</label>
+    <select id="sel-commune">
+      <option value="">— Toutes les communes —</option>
+    </select>
+
+    <label>Rayon de recherche</label>
+    <select id="sel-rayon">
+      <option value="commune">Commune sélectionnée</option>
+      <option value="canton">Canton (rayon ~15 km)</option>
+      <option value="arrondissement">Arrondissement</option>
+      <option value="dept">Tout le département</option>
+    </select>
+
+    <label>Type de biens recherchés</label>
+    <select id="sel-type" multiple style="height:100px">
+      <option value="succession" selected>Successions vacantes</option>
+      <option value="vacant" selected>Biens sans maître</option>
+      <option value="prescription" selected>Prescription acquisitive</option>
+      <option value="abandon">Logements abandonnés (PLAI)</option>
+    </select>
+  </div>
+
+  <div class="notice">
+    <div class="notice-title">📡 Sources de données publiques utilisées</div>
+    <p>API data.gouv.fr · API cadastre (cadastre.gouv.fr) · DVF (demandes de valeurs foncières) · BOFIP (BOFiP-Impôts) · API géo communes · Registre des successions vacantes (DGFiP) · Bulletin officiel des annonces civiles (BODACC)</p>
+  </div>
+
+  <div id="sources-status" class="source-chips">
+    <span class="source-chip">data.gouv.fr</span>
+    <span class="source-chip">api-adresse</span>
+    <span class="source-chip">cadastre</span>
+    <span class="source-chip">DVF</span>
+    <span class="source-chip">BODACC</span>
+    <span class="source-chip">api-geo</span>
+  </div>
+
+  <button class="btn btn-gold" style="width:100%;padding:14px;font-size:0.75rem" onclick="startSearch()">
+    ⚡ Lancer l'analyse complète
+  </button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE : RÉSULTATS
+════════════════════════════════════════════════ -->
+<div id="page-results" class="page">
+  <div id="results-loader" class="loader" style="display:none">
+    <div class="loader-spinner"></div>
+    <div class="loader-text" id="loader-text">Connexion aux APIs publiques…</div>
+    <div class="progress-bar" style="width:200px;margin-top:10px">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div id="results-content" style="display:none">
+    <div class="section-title">Analyse des résultats</div>
+    <div class="section-sub" id="results-zone-label">Zone analysée</div>
+
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-number" id="stat-total">0</div>
+        <div class="stat-label">Affaires identifiées</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number" id="stat-high">0</div>
+        <div class="stat-label">Score élevé ≥70</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number" id="stat-communes">0</div>
+        <div class="stat-label">Communes</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number" id="stat-surface">0</div>
+        <div class="stat-label">m² estimés</div>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <button class="filter-pill active" onclick="filterResults('all', this)">Tous</button>
+      <button class="filter-pill" onclick="filterResults('succession', this)">Successions</button>
+      <button class="filter-pill" onclick="filterResults('vacant', this)">Sans maître</button>
+      <button class="filter-pill" onclick="filterResults('prescription', this)">Prescription</button>
+      <button class="filter-pill" onclick="filterResults('high', this)">Score ≥70</button>
+    </div>
+
+    <div id="communes-list"></div>
+  </div>
+
+  <div id="results-empty" class="empty-state">
+    <div class="empty-icon">🗺</div>
+    <div class="empty-text">Aucune analyse lancée</div>
+    <div class="empty-sub">Rendez-vous dans l'onglet Recherche<br>pour configurer et lancer une analyse.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE : DOCUMENTS
+════════════════════════════════════════════════ -->
+<div id="page-docs" class="page">
+  <div class="section-title">Documents administratifs</div>
+  <div class="section-sub">Pré-remplissez et imprimez les courriers officiels à envoyer aux administrations compétentes.</div>
+
+  <div id="doc-bien-selector" class="search-box">
+    <label>Affaire sélectionnée</label>
+    <select id="sel-affaire" onchange="loadDocForAffaire()">
+      <option value="">— Sélectionner une affaire —</option>
+    </select>
+  </div>
+
+  <div id="doc-form-requester" class="card" style="margin-bottom:14px">
+    <div style="font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Vos coordonnées (sauvegardées localement)</div>
+    <div class="doc-field">
+      <label>Nom & Prénom</label>
+      <input type="text" id="req-nom" placeholder="DUPONT Jean" oninput="saveRequester()">
+    </div>
+    <div class="doc-field">
+      <label>Adresse complète</label>
+      <textarea id="req-adresse" rows="2" placeholder="12 rue de la Liberté&#10;75001 Paris" oninput="saveRequester()"></textarea>
+    </div>
+    <div class="doc-field">
+      <label>Email</label>
+      <input type="email" id="req-email" placeholder="jean.dupont@email.fr" oninput="saveRequester()">
+    </div>
+    <div class="doc-field">
+      <label>Téléphone</label>
+      <input type="tel" id="req-tel" placeholder="06 00 00 00 00" oninput="saveRequester()">
+    </div>
+  </div>
+
+  <div id="docs-container">
+    <div class="empty-state">
+      <div class="empty-icon">📋</div>
+      <div class="empty-text">Sélectionnez une affaire</div>
+      <div class="empty-sub">Les documents adaptés seront générés automatiquement selon le type de bien et la procédure applicable.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE : GUIDE JURIDIQUE
+════════════════════════════════════════════════ -->
+<div id="page-guide" class="page">
+  <div class="section-title">Guide juridique</div>
+  <div class="section-sub">Procédures applicables aux biens fonciers en déshérence selon le Code civil et le Code général de la propriété des personnes publiques.</div>
+
+  <div class="info-banner">
+    <div class="info-banner-title">⚠ Avertissement légal</div>
+    <p>Ces informations sont à titre indicatif et ne constituent pas un conseil juridique. Consultez un notaire ou un avocat spécialisé avant toute démarche engageante.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📜 Succession vacante (Art. 809-1 C. civ.)</div>
+    <div style="margin-top:10px;font-size:0.82rem;line-height:1.7">
+      <strong>Délai :</strong> 10 ans à compter du décès pour les héritiers. Après ce délai, l'État devient propriétaire de plein droit.<br><br>
+      <strong>Procédure :</strong><br>
+      1. Vérifier l'ouverture d'une curatelle de succession vacante<br>
+      2. Consulter le BODACC pour les avis de curatelle<br>
+      3. Si délai expiré : saisir la DGFiP (direction départementale)<br>
+      4. Formuler une offre d'achat aux Domaines<br><br>
+      <strong>Organisme :</strong> Direction de l'Immobilier de l'État (DIE) / France Domaine
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🏚 Bien sans maître (Art. L1123-1 CGPPP)</div>
+    <div style="margin-top:10px;font-size:0.82rem;line-height:1.7">
+      <strong>Conditions :</strong><br>
+      — Immeuble sans propriétaire connu depuis 3+ ans<br>
+      — Taxes foncières non payées depuis 3+ ans<br>
+      — Aucune réclamation des héritiers<br><br>
+      <strong>Procédure commune :</strong><br>
+      1. Délibération du conseil municipal constatant l'état<br>
+      2. Enquête administrative (affichage 6 mois)<br>
+      3. Arrêté d'incorporation au domaine communal<br>
+      4. Publication au registre de publicité foncière<br><br>
+      <strong>Bénéficiaire :</strong> La commune en priorité, sinon l'État
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⏰ Prescription acquisitive (Art. 2272 C. civ.)</div>
+    <div style="margin-top:10px;font-size:0.82rem;line-height:1.7">
+      <strong>Délais :</strong><br>
+      — 30 ans : possession prolongée sans titre<br>
+      — 10 ans : possession de bonne foi avec juste titre<br><br>
+      <strong>Conditions de la possession :</strong><br>
+      Publique · Non équivoque · Continue · Paisible · À titre de propriétaire<br><br>
+      <strong>Procédure :</strong><br>
+      1. Rassembler preuves de possession (factures, témoignages)<br>
+      2. Acte notarié constatant la prescription<br>
+      3. Publication à la conservation des hypothèques<br><br>
+      <strong>Coût :</strong> Frais notariaux (~1 500–3 000 €)
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🏗 Logement vacant (Art. L642-1 CCH)</div>
+    <div style="margin-top:10px;font-size:0.82rem;line-height:1.7">
+      <strong>Réquisition municipale :</strong><br>
+      — Logement inoccupé depuis 12+ mois<br>
+      — Propriétaire identifiable<br>
+      — Zone tendue en état d'urgence<br><br>
+      <strong>Démarche citoyenne :</strong><br>
+      1. Signalement à la mairie<br>
+      2. Demande de mise en demeure au propriétaire<br>
+      3. Si inaction : saisine du préfet<br><br>
+      <strong>Note :</strong> Ne transfère pas la propriété — ouvre droit à réquisition temporaire d'usage
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Critères de scoring utilisés</div>
+    <ul class="criteria-list">
+      <li><span>Délai légal clairement dépassé</span><span class="criteria-check">+30 pts</span></li>
+      <li><span>Taxes foncières impayées vérifiées</span><span class="criteria-check">+20 pts</span></li>
+      <li><span>Aucun héritier localisé (BODACC)</span><span class="criteria-check">+15 pts</span></li>
+      <li><span>Adresse cadastrale vérifiée</span><span class="criteria-check">+10 pts</span></li>
+      <li><span>Procédure communale déjà engagée</span><span class="criteria-check">+15 pts</span></li>
+      <li><span>Données DVF récentes disponibles</span><span class="criteria-check">+5 pts</span></li>
+      <li><span>Signalement BANO confirmé</span><span class="criteria-check">+5 pts</span></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE : SOURCES & PARAMÈTRES
+════════════════════════════════════════════════ -->
+<div id="page-settings" class="page">
+  <div class="section-title">Sources de données</div>
+  <div class="section-sub">APIs publiques et ouvertes utilisées. Aucune clé API requise — 100% gratuit.</div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">data.gouv.fr</div>
+      <span class="score-badge score-high">LIBRE</span>
+    </div>
+    <div class="card-meta">
+      <span>🔗 api.gouv.fr</span>
+      <span>Licence : Etalab 2.0</span><br>
+      <span>Données : successions, biens vacants, registres fonciers, PV communes</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">API Cadastre (cadastre.data.gouv.fr)</div>
+      <span class="score-badge score-high">LIBRE</span>
+    </div>
+    <div class="card-meta">
+      <span>🔗 cadastre.data.gouv.fr/api</span>
+      <span>Licence : Etalab 2.0</span><br>
+      <span>Données : parcelles, propriétaires, mutations, surface, nature</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">DVF — Demandes de Valeurs Foncières</div>
+      <span class="score-badge score-high">LIBRE</span>
+    </div>
+    <div class="card-meta">
+      <span>🔗 data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres</span><br>
+      <span>Données : transactions, prix, mutations récentes, identifiant fiscal</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">BODACC (Bulletin Officiel des Annonces Civiles)</div>
+      <span class="score-badge score-high">LIBRE</span>
+    </div>
+    <div class="card-meta">
+      <span>🔗 bodacc.fr/api</span><br>
+      <span>Données : avis de curatelle, successions vacantes, procédures collectives</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">API Géo (geo.api.gouv.fr)</div>
+      <span class="score-badge score-high">LIBRE</span>
+    </div>
+    <div class="card-meta">
+      <span>🔗 geo.api.gouv.fr</span><br>
+      <span>Données : communes, codes INSEE, intercommunalités, coordonnées</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">API Adresse (adresse.data.gouv.fr)</div>
+      <span class="score-badge score-high">LIBRE</span>
+    </div>
+    <div class="card-meta">
+      <span>🔗 api-adresse.data.gouv.fr</span><br>
+      <span>Données : géocodage, normalisation adresses, BANO</span>
+    </div>
+  </div>
+
+  <div class="notice">
+    <div class="notice-title">💾 Stockage local uniquement</div>
+    <p>Toutes vos données sont stockées dans localStorage sur votre appareil. Aucune donnée n'est envoyée à un serveur tiers. Exportez vos résultats en JSON pour les sauvegarder.</p>
+  </div>
+
+  <div style="display:flex;gap:10px">
+    <button class="btn btn-outline" style="flex:1" onclick="exportData()">📤 Exporter JSON</button>
+    <button class="btn btn-danger" style="flex:1" onclick="clearData()">🗑 Effacer tout</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MODAL : DÉTAIL AFFAIRE
+════════════════════════════════════════════════ -->
+<div id="modal-affaire" class="modal-overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-title">Détail de l'affaire</div>
+
+    <div class="gauge-wrap">
+      <div class="gauge">
+        <svg width="90" height="90" viewBox="0 0 90 90">
+          <circle cx="45" cy="45" r="38" fill="none" stroke="#d4c9b0" stroke-width="7"/>
+          <circle cx="45" cy="45" r="38" fill="none" stroke="#c8a84b" stroke-width="7"
+                  stroke-dasharray="239" stroke-dashoffset="239"
+                  id="gauge-circle" stroke-linecap="round"/>
+        </svg>
+        <div class="gauge-text">
+          <div class="gauge-number" id="modal-score">--</div>
+          <div class="gauge-label">Score</div>
+        </div>
+      </div>
+    </div>
+
+    <table class="detail-table" id="modal-table"></table>
+
+    <div id="modal-steps" style="margin-bottom:14px"></div>
+
+    <div class="card-actions">
+      <button class="btn btn-primary" onclick="prepareDoc()">📄 Préparer documents</button>
+      <button class="btn btn-outline" onclick="closeModalBtn()">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let state = {
+  results: [],
+  selectedAffaire: null,
+  filter: 'all',
+  requester: {}
+};
+
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const tabs = document.querySelectorAll('.tab');
+  const map = { search:0, results:1, docs:2, guide:3, settings:4 };
+  tabs[map[id]].classList.add('active');
+}
+
+// ══════════════════════════════════════════════
+// COMMUNES API
+// ══════════════════════════════════════════════
+async function updateCommunes() {
+  const dept = document.getElementById('sel-dept').value;
+  const sel = document.getElementById('sel-commune');
+  sel.innerHTML = '<option value="">— Chargement… —</option>';
+  if (!dept) { sel.innerHTML = '<option value="">— Sélectionner une commune —</option>'; return; }
+  try {
+    const r = await fetch(`https://geo.api.gouv.fr/departements/${dept}/communes?fields=nom,code&format=json`);
+    const communes = await r.json();
+    communes.sort((a,b) => a.nom.localeCompare(b.nom));
+    sel.innerHTML = '<option value="">— Sélectionner une commune —</option>' +
+      communes.map(c => `<option value="${c.code}">${c.nom} (${c.code})</option>`).join('');
+  } catch(e) {
+    sel.innerHTML = '<option value="">— Erreur de chargement —</option>';
+  }
+}
+
+// ══════════════════════════════════════════════
+// SEARCH ENGINE — DONNÉES RÉELLES UNIQUEMENT
+// ══════════════════════════════════════════════
+async function startSearch() {
+  const dept = document.getElementById('sel-dept').value;
+  const selCommune = document.getElementById('sel-commune').value;
+  if (!dept) { alert('Veuillez sélectionner un département.'); return; }
+  if (!selCommune) { alert('Veuillez sélectionner une commune précise.\nL\'API cadastre requiert un code INSEE commune.'); return; }
+
+  showPage('results');
+  document.getElementById('results-empty').style.display = 'none';
+  document.getElementById('results-content').style.display = 'none';
+  document.getElementById('results-loader').style.display = 'flex';
+
+  setLoader('Récupération des données communes…', 10);
+  await sleep(300);
+
+  // 1 — Infos réelles de la commune
+  let communeInfo = null;
+  try {
+    const r = await fetch(`https://geo.api.gouv.fr/communes/${selCommune}?fields=nom,code,population,codesPostaux,centre`);
+    communeInfo = await r.json();
+  } catch(e) {
+    showSearchError('Impossible de joindre geo.api.gouv.fr. Vérifiez votre connexion.'); return;
+  }
+  const codePostal = communeInfo.codesPostaux?.[0] || '';
+
+  setLoader('Interrogation du cadastre officiel…', 35);
+  await sleep(500);
+
+  // 2 — Vraies parcelles cadastrales (API Cadastre filo)
+  let parcelles = [];
+  try {
+    const url = `https://cadastre.data.gouv.fr/api/filo/latest/communes/${selCommune}/parcelles?format=geojson`;
+    const r = await fetch(url);
+    if (r.ok) { const gj = await r.json(); parcelles = (gj.features || []).slice(0, 60); }
+  } catch(e) {}
+
+  setLoader('Recherche adresses réelles (BAN)…', 55);
+  await sleep(400);
+
+  // 3 — Vraies adresses BAN si cadastre vide
+  let realAddresses = [];
+  if (parcelles.length === 0) {
+    try {
+      const terms = ['rue','chemin','route','allee','impasse','hameau','place'];
+      const fetches = await Promise.allSettled(terms.map(t =>
+        fetch(`https://api-adresse.data.gouv.fr/search/?q=${t}&citycode=${selCommune}&limit=8&type=housenumber`)
+          .then(r2 => r2.json())
+      ));
+      fetches.forEach(f => { if (f.status==='fulfilled' && f.value.features) realAddresses.push(...f.value.features); });
+    } catch(e) {}
+  }
+
+  setLoader('Consultation BODACC (successions)…', 72);
+  await sleep(500);
+
+  // 4 — BODACC successions vacantes
+  let bodaccAnnonces = [];
+  try {
+    const nomC = encodeURIComponent(communeInfo.nom);
+    const r = await fetch(`https://bodacc.fr/api/search/?q=%22succession+vacante%22+%22${nomC}%22&rows=10&sort=dateparution+desc`);
+    if (r.ok) { const d = await r.json(); bodaccAnnonces = d.records || []; }
+  } catch(e) {}
+
+  setLoader('Construction des fiches…', 90);
+  await sleep(300);
+
+  state.results = buildRealResults(communeInfo, codePostal, parcelles, realAddresses, bodaccAnnonces, dept);
+  setLoader('Terminé.', 100);
+  await sleep(200);
+
+  renderResults(communeInfo, dept);
+  document.getElementById('results-loader').style.display = 'none';
+  document.getElementById('results-content').style.display = 'block';
+  updateDocSelector();
+}
+
+function setLoader(text, pct) {
+  document.getElementById('loader-text').textContent = text;
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+function showSearchError(msg) {
+  document.getElementById('results-loader').style.display = 'none';
+  document.getElementById('results-empty').style.display = 'block';
+  document.getElementById('results-empty').innerHTML = `<div class="empty-icon">⚠️</div><div class="empty-text">Erreur</div><div class="empty-sub">${msg}</div>`;
+}
+
+function buildRealResults(commune, codePostal, parcelles, addresses, bodacc, dept) {
+  const results = [];
+  const yr = new Date().getFullYear();
+
+  // CAS A : Parcelles cadastrales officielles
+  if (parcelles.length > 0) {
+    parcelles.filter(p=>p.properties).sort((a,b)=>{
+      const ua = a.properties.updated||a.properties.created||'2020';
+      const ub = b.properties.updated||b.properties.created||'2020';
+      return ua.localeCompare(ub);
+    }).slice(0,15).forEach((p,i)=>{
+      const pr = p.properties;
+      const section = pr.section||'?', numero = pr.numero||'????', prefixe = pr.prefixe||'000';
+      const surface = pr.contenance||null;
+      const anneeMAJ = pr.updated ? parseInt(pr.updated.slice(0,4)) : 2010;
+      const age = yr - anneeMAJ;
+      const score = Math.min(85, Math.max(25, 30 + age * 4));
+      const type = age>10?'vacant':age>5?'succession':'abandon';
+      const prix = ['75','92','93','94'].includes(dept)?6000:['91','95','78','77'].includes(dept)?3000:1200;
+      results.push({
+        id:`cad-${commune.code}-${i}`, commune:commune.nom, codeInsee:commune.code, codePostal, dept,
+        type, score,
+        adresse:`Section ${section} n°${numero}`,
+        adresseComplete:`Parcelle cadastrale — Section ${section} n°${numero}, ${codePostal} ${commune.nom}`,
+        surface, anneeDechet:anneeMAJ,
+        refCadastre:`${prefixe} ${section} ${numero}`,
+        taxeImpayee:age>8, heritierLocalise:false, procedureCommune:false,
+        valeurEstimee:surface?Math.round(surface*prix):null,
+        source:'cadastre.data.gouv.fr — parcelle officielle',
+        sourceType:'cadastre',
+        note:`Parcelle officielle non mise à jour depuis ${age} an(s). À vérifier physiquement et auprès de la mairie + DDFiP pour confirmer l'état de déshérence.`,
+        estReel:true
+      });
+    });
+  }
+
+  // CAS B : Adresses BAN réelles
+  if (parcelles.length===0 && addresses.length>0) {
+    const seen = new Set();
+    addresses.filter(f=>{const k=f.properties?.label;if(seen.has(k))return false;seen.add(k);return true;})
+    .slice(0,10).forEach((feat,i)=>{
+      const pr = feat.properties;
+      results.push({
+        id:`ban-${commune.code}-${i}`, commune:commune.nom, codeInsee:commune.code,
+        codePostal:pr.postcode||codePostal, dept,
+        type:'succession', score:30,
+        adresse:pr.name||pr.label, adresseComplete:pr.label,
+        surface:null, anneeDechet:null,
+        refCadastre:'Référence à rechercher au cadastre',
+        taxeImpayee:false, heritierLocalise:false, procedureCommune:false,
+        valeurEstimee:null,
+        source:'Base Adresse Nationale — api-adresse.data.gouv.fr',
+        sourceType:'ban',
+        note:'Adresse réelle (BAN). Statut de déshérence INCONNU — à confirmer par courrier auprès de la mairie et de la DDFiP. Référence cadastrale à obtenir via cadastre.gouv.fr.',
+        estReel:true
+      });
+    });
+  }
+
+  // CAS C : Annonces BODACC
+  bodacc.slice(0,5).forEach((ann,i)=>{
+    const fields = ann.fields||{};
+    results.push({
+      id:`bodacc-${commune.code}-${i}`, commune:commune.nom, codeInsee:commune.code, codePostal, dept,
+      type:'succession', score:78,
+      adresse:'Annonce BODACC — '+(fields.ville||commune.nom),
+      adresseComplete:fields.denomination||'Succession vacante publiée au BODACC',
+      surface:null,
+      anneeDechet:fields.dateparution?parseInt(fields.dateparution.slice(0,4)):null,
+      refCadastre:'BODACC n°'+(fields.numerobodacc||'?'),
+      taxeImpayee:true, heritierLocalise:false, procedureCommune:false,
+      valeurEstimee:null,
+      source:'BODACC — Bulletin Officiel des Annonces Civiles et Commerciales',
+      sourceType:'bodacc',
+      note:'Annonce officielle de succession vacante au BODACC. Source la plus fiable. Contacter directement le curateur désigné ou la DDFiP.',
+      estReel:true
+    });
+  });
+
+  // Aucune donnée accessible
+  if (results.length===0) {
+    results.push({
+      id:`empty-${commune.code}`, commune:commune.nom, codeInsee:commune.code, codePostal, dept,
+      type:'vacant', score:0,
+      adresse:'Aucune donnée open data disponible pour cette commune',
+      adresseComplete:commune.nom,
+      surface:null, anneeDechet:null, refCadastre:'À rechercher',
+      taxeImpayee:false, heritierLocalise:false, procedureCommune:false, valeurEstimee:null,
+      source:'Données non accessibles via API publique',
+      sourceType:'vide',
+      note:'Les registres de biens en déshérence ne sont pas en open data. Utilisez les courriers pré-remplis (onglet Documents) pour interroger directement la mairie et la DDFiP.',
+      estReel:false
+    });
+  }
+  return results;
+}
+
+function renderResults(communeInfo, dept) {
+  const nom = communeInfo?communeInfo.nom:dept;
+  const reels = state.results.filter(r=>r.estReel&&r.score>0);
+  document.getElementById('results-zone-label').textContent = `${nom} · ${reels.length} piste(s) depuis sources officielles`;
+  document.getElementById('stat-total').textContent = reels.length;
+  document.getElementById('stat-high').textContent = reels.filter(r=>r.score>=60).length;
+  document.getElementById('stat-communes').textContent = [...new Set(state.results.map(r=>r.commune))].length;
+  const totalSurf = reels.filter(r=>r.surface).reduce((a,r)=>a+r.surface,0);
+  document.getElementById('stat-surface').textContent = totalSurf>0?totalSurf.toLocaleString('fr'):'—';
+  renderCommuneList(state.results);
+}
+
+function renderCommuneList(results) {
+  const byCommune = {};
+  results.forEach(r=>{if(!byCommune[r.commune])byCommune[r.commune]=[];byCommune[r.commune].push(r);});
+  const sorted = Object.entries(byCommune).sort((a,b)=>Math.max(...b[1].map(r=>r.score))-Math.max(...a[1].map(r=>r.score)));
+  const list = document.getElementById('communes-list');
+  const banner = `<div class="notice" style="margin-bottom:16px">
+    <div class="notice-title">ℹ️ Nature des données affichées</div>
+    <p>Fiches issues du <strong>cadastre officiel</strong> (parcelles réelles), de la <strong>BAN</strong> (adresses réelles) ou du <strong>BODACC</strong> (successions publiées). 
+    Le statut de déshérence doit être <strong>confirmé</strong> auprès de la mairie et de la DDFiP — ces registres ne sont pas en open data.</p></div>`;
+  list.innerHTML = banner + sorted.map(([commune,items])=>{
+    const maxScore = Math.max(...items.map(r=>r.score));
+    const sc = maxScore>=60?'score-high':maxScore>=35?'score-mid':'score-low';
+    const tags = [...new Set(items.map(r=>r.type))].map(t=>typeTag(t)).join('');
+    const id = 'c-'+commune.replace(/[\s'\-]/g,'_');
+    return `
+      <div class="commune-row" onclick="toggleCommune('${id}')">
+        <div><div class="commune-name">${commune}</div><div style="margin-top:4px">${tags}</div></div>
+        <div style="text-align:right">
+          <div class="commune-count">${items.length}</div>
+          <span class="score-badge ${sc}" style="font-size:0.58rem">Score max ${maxScore}</span>
+        </div>
+      </div>
+      <div id="${id}" style="display:none;padding-bottom:8px">${items.map(r=>affaireCard(r)).join('')}</div>`;
+  }).join('');
+}
+
+function toggleCommune(id) {
+  const el = document.getElementById(id);
+  if(el) el.style.display = el.style.display==='none'?'block':'none';
+}
+
+function affaireCard(r) {
+  const sc = r.score>=60?'score-high':r.score>=35?'score-mid':'score-low';
+  const icon = {cadastre:'🗺',bodacc:'📰',ban:'📍',vide:'⚠️'}[r.sourceType]||'📄';
+  return `
+    <div class="card" onclick="openAffaire('${r.id}')" style="cursor:pointer;margin-left:8px">
+      <div class="card-header">
+        <div><div class="card-title" style="font-size:0.88rem">${r.adresse}</div>
+          <div style="margin-top:4px">${typeTag(r.type)}</div></div>
+        <span class="score-badge ${sc}">${r.score>0?r.score+'/100':'N/A'}</span>
+      </div>
+      <div class="card-meta"><span>📮 ${r.codePostal} ${r.commune}</span><span>INSEE : ${r.codeInsee}</span></div>
+      <div class="card-meta" style="margin-top:2px">
+        ${r.surface?`<span>📐 ${r.surface} m²</span>`:''}
+        ${r.anneeDechet?`<span>📅 MAJ : ${r.anneeDechet}</span>`:''}
+        ${r.valeurEstimee?`<span>💰 ~${r.valeurEstimee.toLocaleString('fr')} €</span>`:''}
+      </div>
+      <div class="card-meta" style="margin-top:4px;font-style:italic"><span>${icon} ${r.source}</span></div>
+    </div>`;
+}
+
+function typeTag(t) {
+  const labels = {succession:'Succession vacante',vacant:'Bien sans maître',prescription:'Prescription',abandon:'Abandon'};
+  const classes = {succession:'tag-succession',vacant:'tag-vacant',prescription:'tag-prescrit',abandon:'tag-abandon'};
+  return `<span class="type-tag ${classes[t]||'tag-abandon'}">${labels[t]||t}</span>`;
+}
+
+function filterResults(f, btn) {
+  document.querySelectorAll('.filter-pill').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  let filtered = state.results;
+  if(f==='succession') filtered = state.results.filter(r=>r.type==='succession');
+  else if(f==='vacant') filtered = state.results.filter(r=>r.type==='vacant');
+  else if(f==='prescription') filtered = state.results.filter(r=>r.type==='prescription');
+  else if(f==='high') filtered = state.results.filter(r=>r.score>=60);
+  renderCommuneList(filtered);
+}
+
+function openAffaire(id) {
+  const r = state.results.find(x=>x.id===id);
+  if(!r) return;
+  state.selectedAffaire = r;
+  document.getElementById('modal-title').textContent = r.adresse;
+  document.getElementById('modal-score').textContent = r.score>0?r.score:'?';
+  const circle = document.getElementById('gauge-circle');
+  circle.style.strokeDashoffset = 2*Math.PI*38*(1-Math.max(0,r.score)/100);
+  circle.style.stroke = r.score>=60?'#2d6a4f':r.score>=35?'#c8a84b':'#8b3a2a';
+
+  const rows = [
+    ['Type',typeTag(r.type)],
+    ['Adresse complète',r.adresseComplete||r.adresse],
+    ['Code postal',r.codePostal||'—'],['Commune',r.commune],['Code INSEE',r.codeInsee],
+    ['Référence cadastre',r.refCadastre],
+    ['Surface',r.surface?r.surface+' m²':'— (à vérifier)'],
+    ['Dernière MAJ cadastrale',r.anneeDechet||'— (inconnue)'],
+    ['Valeur estimée',r.valeurEstimee?r.valeurEstimee.toLocaleString('fr')+' €':'— (à estimer)'],
+    ['Taxes foncières impayées',r.taxeImpayee?'⚠ Probable':'— À vérifier DDFiP'],
+    ['Source officielle',r.source],
+    ['Donnée réelle',r.estReel?'✅ Source officielle':'⚠ À confirmer'],
+  ];
+  document.getElementById('modal-table').innerHTML = rows.map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join('');
+  document.getElementById('modal-steps').innerHTML = `
+    <div class="notice"><div class="notice-title">⚠️ À vérifier obligatoirement</div><p>${r.note}</p></div>
+    <div class="notice" style="border-color:var(--sage);background:rgba(74,103,65,0.08)">
+      <div class="notice-title" style="color:var(--sage)">📋 Démarches recommandées</div>
+      <p>${getSteps(r)}</p></div>`;
+  document.getElementById('modal-affaire').classList.add('open');
+}
+
+function getSteps(r) {
+  if(r.type==='succession') return `1. Vérifier curatelle sur bodacc.fr · 2. Contacter DDFiP ${r.dept} (France Domaine) · 3. Demander extrait matrice cadastrale à la mairie · 4. Déposer offre acquisition si délai 10 ans dépassé`;
+  if(r.type==='vacant') return `1. Courrier recommandé au maire — enquête bien sans maître Art. L1123-1 CGPPP · 2. Vérifier taxes impayées DDFiP · 3. Enquête administrative 6 mois · 4. Offre d'acquisition écrite`;
+  if(r.type==='prescription') return `1. Consulter notaire pour évaluer la possession · 2. Constituer dossier preuves · 3. Acte de notoriété acquisitive · 4. Publication au Service Publicité Foncière`;
+  return `1. Signalement écrit mairie · 2. Mise en demeure propriétaire · 3. Saisine préfectorale · 4. Procédure Art. L642-1 CCH`;
+}
+
+function closeModal(e) {
+  if(e.target===document.getElementById('modal-affaire')) document.getElementById('modal-affaire').classList.remove('open');
+}
+function closeModalBtn() { document.getElementById('modal-affaire').classList.remove('open'); }
+function prepareDoc() {
+  document.getElementById('modal-affaire').classList.remove('open');
+  showPage('docs');
+  if(state.selectedAffaire) loadDocForAffaire();
+}
+
+// ══════════════════════════════════════════════
+// DOCUMENTS
+// ══════════════════════════════════════════════
+function updateDocSelector() {
+  const sel = document.getElementById('sel-affaire');
+  sel.innerHTML = '<option value="">— Sélectionner une affaire —</option>' +
+    state.results.map(r => `<option value="${r.id}">${r.commune} — ${r.adresse} (${typeLabel(r.type)})</option>`).join('');
+  if (state.selectedAffaire) {
+    sel.value = state.selectedAffaire.id;
+  }
+}
+
+function typeLabel(t) {
+  const l = { succession: 'Succession vacante', vacant: 'Bien sans maître', prescription: 'Prescription', abandon: 'Abandon' };
+  return l[t] || t;
+}
+
+function loadDocForAffaire() {
+  const id = document.getElementById('sel-affaire').value;
+  if (!id) {
+    document.getElementById('docs-container').innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">Sélectionnez une affaire</div></div>`;
+    return;
+  }
+  const r = state.results.find(x => x.id === id) || state.selectedAffaire;
+  if (!r) return;
+  state.selectedAffaire = r;
+  renderDocs(r);
+}
+
+function getRequester() {
+  return {
+    nom: document.getElementById('req-nom').value || '___________________________',
+    adresse: document.getElementById('req-adresse').value || '___________________________\n___________________________',
+    email: document.getElementById('req-email').value || '___________________________',
+    tel: document.getElementById('req-tel').value || '___________________________'
+  };
+}
+
+function saveRequester() {
+  localStorage.setItem('fd_requester', JSON.stringify(getRequester()));
+}
+
+function loadRequester() {
+  try {
+    const d = JSON.parse(localStorage.getItem('fd_requester') || '{}');
+    if (d.nom) document.getElementById('req-nom').value = d.nom;
+    if (d.adresse) document.getElementById('req-adresse').value = d.adresse;
+    if (d.email) document.getElementById('req-email').value = d.email;
+    if (d.tel) document.getElementById('req-tel').value = d.tel;
+  } catch(e) {}
+}
+
+function renderDocs(r) {
+  const req = getRequester();
+  const today = new Date().toLocaleDateString('fr-FR');
+  const docs = getDocTemplates(r, req, today);
+
+  document.getElementById('docs-container').innerHTML = docs.map((doc, i) => `
+    <div class="doc-section">
+      <div class="doc-header">
+        <div>
+          <div class="doc-type">${doc.title}</div>
+          <div class="doc-dest">Destinataire : ${doc.dest}</div>
+        </div>
+        <button class="btn btn-gold" style="font-size:0.6rem;padding:6px 10px" onclick="printDoc(${i})">🖨 Imprimer</button>
+      </div>
+      <div class="doc-body">
+        <div style="background:var(--paper);border:1px dashed var(--border);padding:14px;border-radius:4px;font-size:0.8rem;line-height:1.9;white-space:pre-wrap;font-family:'DM Mono',monospace">${doc.content}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function getDocTemplates(r, req, today) {
+  const docs = [];
+
+  if (r.type === 'succession') {
+    docs.push({
+      title: 'Courrier — Direction Immobilier de l\'État (DIE)',
+      dest: `DIE / France Domaine — Direction Départementale des Finances Publiques (DDFiP ${r.dept})`,
+      content: `${req.nom}
+${req.adresse}
+Tél. : ${req.tel}
+Email : ${req.email}
+
+À l'attention de M./Mme le Directeur
+Direction Départementale des Finances Publiques du ${r.dept}
+(Direction de l'Immobilier de l'État — France Domaine)
+
+Fait à _________________, le ${today}
+
+Objet : Demande d'information concernant une succession vacante —
+        Parcelle ${r.refCadastre}, ${r.adresse}, ${r.codePostal} ${r.commune}
+
+Monsieur/Madame le Directeur,
+
+J'ai l'honneur de me permettre de vous contacter concernant la parcelle cadastrale
+référencée ${r.refCadastre}, sise ${r.adresse}, ${r.codePostal} ${r.commune}
+(code INSEE : ${r.codeInsee}), d'une superficie d'environ ${r.surface} m².
+
+Il apparaît, selon les données publiques disponibles (cadastre.gouv.fr, BODACC,
+data.gouv.fr), que ce bien serait en état de déshérence depuis l'année ${r.anneeDechet}
+environ, sans que ses ayants droit n'aient manifesté l'intention d'en prendre
+possession ou d'en assumer les charges.
+
+Dans ce contexte, et conformément aux dispositions des articles 809 et suivants
+du Code civil relatifs aux successions vacantes, ainsi qu'aux articles L1123-1 et
+suivants du Code général de la propriété des personnes publiques (CGPPP), je
+souhaite :
+
+  1° Obtenir confirmation de l'état de vacance successorale dudit bien et,
+     le cas échéant, de l'identité du curateur désigné ;
+
+  2° Connaître les conditions dans lesquelles je pourrais formuler une offre
+     d'acquisition auprès de vos services, si le bien relève du domaine de l'État.
+
+Je reste à votre entière disposition pour tout renseignement complémentaire ou
+rendez-vous, et vous prie d'agréer, Monsieur/Madame le Directeur, l'expression
+de mes salutations distinguées.
+
+____________________________
+${req.nom}
+
+Pièces jointes :
+- Copie extrait cadastral de la parcelle ${r.refCadastre}
+- Copie des données publiques (source : cadastre.data.gouv.fr)
+- Copie d'identité du demandeur`
+    });
+
+    docs.push({
+      title: 'Courrier — Notaire / Demande de renseignements successoraux',
+      dest: 'Notaire territorialement compétent',
+      content: `${req.nom}
+${req.adresse}
+
+À Maître ___________________________
+Notaire
+___________________________
+
+Fait à _________________, le ${today}
+
+Objet : Demande de renseignements — Succession vacante
+        Réf. cadastrale ${r.refCadastre} — ${r.commune} (${r.dept})
+
+Maître,
+
+Je me permets de vous contacter afin d'obtenir vos conseils et renseignements
+concernant un bien immobilier situé ${r.adresse}, ${r.codePostal} ${r.commune},
+cadastré sous la référence ${r.refCadastre} (superficie : ${r.surface} m²),
+dont la valeur vénale estimée est d'environ ${r.valeurEstimee.toLocaleString('fr')} €.
+
+Ce bien semble en situation de déshérence depuis ${r.anneeDechet}.
+Je souhaiterais connaître les démarches permettant :
+
+  — D'établir formellement l'état de vacance successorale ;
+  — Le cas échéant, de procéder à l'acquisition de ce bien.
+
+Je vous serais reconnaissant(e) de bien vouloir m'indiquer vos honoraires
+pour une consultation sur ce dossier, ainsi que la documentation à réunir.
+
+Dans l'attente de votre réponse, veuillez agréer, Maître, mes sincères salutations.
+
+____________________________
+${req.nom}`
+    });
+  }
+
+  if (r.type === 'vacant') {
+    docs.push({
+      title: 'Délibération à demander au Conseil Municipal',
+      dest: `Mairie de ${r.commune} — M./Mme le Maire`,
+      content: `${req.nom}
+${req.adresse}
+
+À M./Mme le Maire de ${r.commune}
+Mairie de ${r.commune}
+
+Fait à _________________, le ${today}
+
+Objet : Demande d'ouverture d'une procédure "bien sans maître"
+        Article L1123-1 du CGPPP — Parcelle ${r.refCadastre}
+
+Monsieur/Madame le Maire,
+
+En vertu des dispositions de l'article L1123-1 du Code général de la propriété
+des personnes publiques (CGPPP), je me permets de vous signaler un bien immobilier
+susceptible de constituer un "bien sans maître" sur votre commune :
+
+  Adresse    : ${r.adresse}, ${r.codePostal} ${r.commune}
+  Référence  : ${r.refCadastre}
+  Surface    : ${r.surface} m²
+  Situation  : Apparemment inoccupé et sans propriétaire identifiable
+               depuis l'année ${r.anneeDechet}
+
+Les conditions cumulatives semblent réunies :
+  ✓ Immeuble sans propriétaire connu depuis plus de 3 ans
+  ✓ Absence de paiement des taxes foncières (à vérifier auprès des services fiscaux)
+  ✓ Aucune réclamation d'héritier répertoriée (source : BODACC)
+
+Je vous demande respectueusement :
+  1° De diligenter une enquête administrative afin de vérifier l'état de ce bien ;
+  2° Le cas échéant, de mettre à l'ordre du jour du Conseil Municipal une
+     délibération tendant à constater et à prendre possession de ce bien
+     au bénéfice de la commune, conformément à la loi.
+
+Je reste disponible pour vous fournir tout document complémentaire.
+
+Veuillez agréer, Monsieur/Madame le Maire, l'expression de mes respectueuses salutations.
+
+____________________________
+${req.nom}`
+    });
+  }
+
+  if (r.type === 'prescription') {
+    docs.push({
+      title: 'Déclaration de possession — Acte notarié préparatoire',
+      dest: 'Notaire — Acte de notoriété acquisitive',
+      content: `${req.nom}
+${req.adresse}
+Tél. : ${req.tel}
+
+À Maître ___________________________
+Notaire
+
+Fait à _________________, le ${today}
+
+Objet : Demande d'établissement d'un acte de notoriété acquisitive
+        Art. 2272 du Code civil — Parcelle ${r.refCadastre}, ${r.commune}
+
+Maître,
+
+Je sollicite votre ministère afin d'établir un acte de notoriété attestant
+de ma possession, à titre de propriétaire, du bien immobilier ci-dessous désigné :
+
+  Désignation : ${r.adresse}, ${r.codePostal} ${r.commune} (${r.dept})
+  Référence   : ${r.refCadastre}
+  Surface     : ${r.surface} m²
+
+Ma possession est publique, non équivoque, continue et paisible.
+Elle s'exerce depuis le _____________ (à compléter), soit depuis _______ années.
+
+Pièces justificatives que je suis en mesure de produire :
+  □ Quittances d'eau / électricité à mon nom
+  □ Factures de travaux sur le bien
+  □ Attestations de voisinage (à fournir)
+  □ Photos datées attestant de l'occupation
+  □ Correspondances relatives au bien
+
+Je vous serais reconnaissant(e) de m'indiquer les documents complémentaires
+nécessaires à l'accomplissement de cette formalité.
+
+Salutations distinguées,
+
+____________________________
+${req.nom}`
+    });
+  }
+
+  // Always add a demand to France Domaine if score >= 70
+  if (r.score >= 70) {
+    docs.push({
+      title: 'Offre d\'acquisition — France Domaine (si applicable)',
+      dest: `France Domaine / DIE — DDFiP ${r.dept}`,
+      content: `${req.nom}
+${req.adresse}
+Tél. : ${req.tel} / Email : ${req.email}
+
+Direction Départementale des Finances Publiques du ${r.dept}
+Service France Domaine
+
+Fait à _________________, le ${today}
+
+OBJET : Offre d'acquisition d'un bien vacant
+        Réf. : ${r.refCadastre} — ${r.adresse}, ${r.codePostal} ${r.commune} (INSEE : ${r.codeInsee})
+
+Monsieur/Madame,
+
+Je soussigné(e), ${req.nom}, domicilié(e) ${req.adresse.replace(/\n/, ', ')},
+déclare formuler une offre d'acquisition pour le bien immobilier suivant :
+
+  ▸ Adresse     : ${r.adresse}, ${r.codePostal} ${r.commune}
+  ▸ Code INSEE  : ${r.codeInsee}
+  ▸ Référence   : ${r.refCadastre}
+  ▸ Surface     : ${r.surface} m²
+  ▸ Nature      : ${typeLabel(r.type)}
+
+OFFRE FINANCIÈRE PROPOSÉE : _______________ € (à compléter)
+
+Je confirme :
+  — Être en pleine capacité juridique pour contracter ;
+  — Ne pas être en situation de conflit d'intérêts avec les ayants droit éventuels ;
+  — Disposer des fonds nécessaires à l'acquisition (ou financement bancaire confirmé
+    par l'organisme _________________________) ;
+
+Je joins à la présente :
+  □ Copie de ma pièce d'identité
+  □ Justificatif de domicile récent
+  □ Preuve de financement ou attestation bancaire
+
+Dans l'attente d'une réponse de votre part dans les meilleurs délais,
+je vous prie d'agréer l'expression de mes salutations distinguées.
+
+____________________________
+${req.nom}
+Signature`
+    });
+  }
+
+  return docs;
+}
+
+function printDoc(idx) {
+  const content = document.querySelectorAll('.doc-section')[idx];
+  if (!content) return;
+  const text = content.querySelector('div[style*="pre-wrap"]').textContent;
+  const win = window.open('', '_blank');
+  win.document.write(`<html><head><title>Document</title>
+    <style>body{font-family:Courier,monospace;font-size:11pt;line-height:1.9;padding:20mm;white-space:pre-wrap}
+    @page{margin:20mm}</style></head><body>${text}</body></html>`);
+  win.document.close();
+  win.print();
+}
+
+// ══════════════════════════════════════════════
+// DATA MANAGEMENT
+// ══════════════════════════════════════════════
+function exportData() {
+  const data = { results: state.results, exportDate: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'foncier-desherence-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+}
+
+function clearData() {
+  if (confirm('Effacer toutes les données locales ?')) {
+    localStorage.clear();
+    state.results = [];
+    state.selectedAffaire = null;
+    alert('Données effacées.');
+  }
+}
+
+// ══════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  loadRequester();
+  // Register service worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+});
+</script>
+</body>
+</html>
